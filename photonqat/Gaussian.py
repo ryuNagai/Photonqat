@@ -85,37 +85,36 @@ class Gaussian():
             plt.show()
         return (x, p, W)
 
-    # Future replaced
-    # def PhotonDetectionProb(self, m, n):
-    #     """
-    #     Calculate Fock density matrix element rho_{mn}.
-    #     m and n should be numpy array which length is same as mode number.
-    #     When m = n, the returned value is probability for photon number m is measured.
-    #     For example, if m = n = np.array([0, 0]), returned value is probability \
-    #         for detecting 0 photon for both two modes.
-    #     """
-    #     if len(m) != self.N or len(n) != self.N:
-    #         raise ValueError("Input array dimension must be same as mode Number.")
-    #     return np.real(FockDensityMatrix(self.V, self.mu, m, n))
+    def PhotonDetectionProb(self, m, n):
+        """
+        Calculate Fock density matrix element rho_{mn}.
+        m and n should be numpy array which length is same as mode number.
+        When m = n, the returned value is probability for photon number m is measured.
+        For example, if m = n = np.array([0, 0]), returned value is probability \
+            for detecting 0 photon for both two modes.
+        """
+        if len(m) != self.N or len(n) != self.N:
+            raise ValueError("Input array dimension must be same as mode Number.")
+        return np.real(FockDensityMatrix(self.V, self.mu, m, n))
 
 
-    # def GaussianToFock(self, cutoffDim = 10):
-    #     photonNumList = []
-    #     cutoffDim += 1
-    #     rho = np.empty([cutoffDim ** self.N, cutoffDim ** self.N])
-    #     for i in range(cutoffDim ** self.N):
-    #         photonNum = []
-    #         for j in range(self.N):
-    #             photonNum.insert(0, np.int(np.floor(i / (cutoffDim ** j))) % cutoffDim)
-    #         photonNumList.append(photonNum)
+    def GaussianToFock(self, cutoffDim = 10):
+        photonNumList = []
+        cutoffDim += 1
+        rho = np.empty([cutoffDim ** self.N, cutoffDim ** self.N])
+        for i in range(cutoffDim ** self.N):
+            photonNum = []
+            for j in range(self.N):
+                photonNum.insert(0, np.int(np.floor(i / (cutoffDim ** j))) % cutoffDim)
+            photonNumList.append(photonNum)
 
-    #     for i in range(cutoffDim ** self.N):
-    #         for j in range(cutoffDim ** self.N):
-    #             m = np.array(photonNumList[i])
-    #             n = np.array(photonNumList[j])
-    #             row = [m[i] ** (self.N - i - 1) for i in range(self.N)]
-    #             col = [n[i] ** (self.N - i - 1) for i in range(self.N)]
-    #             rho[row, col] = FockDensityMatrix(self.V, self.mu, m, n)
+        for i in range(cutoffDim ** self.N):
+            for j in range(cutoffDim ** self.N):
+                m = np.array(photonNumList[i])
+                n = np.array(photonNumList[j])
+                row = [m[i] ** (self.N - i - 1) for i in range(self.N)]
+                col = [n[i] ** (self.N - i - 1) for i in range(self.N)]
+                rho[row, col] = FockDensityMatrix(self.V, self.mu, m, n)
 
-    #     return rho
+        return rho
 
