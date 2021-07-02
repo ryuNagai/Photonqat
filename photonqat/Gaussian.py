@@ -156,7 +156,6 @@ class Gaussian():
                         else:
                             theta = -np.angle(U[n-i+j-1][j])+np.angle(U[n-i+j][j])
                             alpha = np.arctan(-(np.absolute(U[n-i+j][j])/np.absolute(U[n-i+j-1][j])))
-                            print(alpha)
                         BSang[-(i-1+j)] = alpha
                         rot[-(i-1+j)] = theta
                         e = np.cos(theta) + np.sin(theta)*1j
@@ -170,7 +169,7 @@ class Gaussian():
         for i in range(1, n, 2):
             for k in range(i):
                 self.ops.append(GATE_SET['R'])
-                self.ops[-1] = self.ops[-1](self, i-1, rot[counter])
+                self.ops[-1] = self.ops[-1](self, i-1-k, rot[counter])
                 self.ops.append(GATE_SET['BS'])
                 self.ops[-1] = self.ops[-1](self, i-1-k, i-1-k+1, BSang[counter])
                 counter += 1
