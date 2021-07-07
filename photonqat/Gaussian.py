@@ -97,7 +97,6 @@ class Gaussian():
             raise ValueError("Input array dimension must be same as mode Number.")
         return np.real(FockDensityMatrix(self.V, self.mu, m, n))
 
-
     def GaussianToFock(self, cutoffDim = 10):
         photonNumList = []
         cutoffDim += 1
@@ -117,4 +116,67 @@ class Gaussian():
                 rho[row, col] = FockDensityMatrix(self.V, self.mu, m, n)
 
         return rho
+
+    def Interferometer(self, U):
+        num = self.N
+        n = U.shape[0]
+        BSang = [0]*(int(n*(n-1)/2))
+        rot = [0]*(int(n*(n-1)/2))
+        for i in range (1, n):
+            if ((i+2)%2==1):
+                for j in range (i): 
+                    T = np.identity(n, dtype = complex)
+                    if U[n-j-1][i-j-1]==0:
+                        theta = 0
+                        alpha = 0
+                    elif U[n-j-1][i-j]==0:
+                        theta = 0
+                        alpha = np.pi/2
+                    else:
+                        theta = np.angle(U[n-j-1][i-1-j])-np.angle(U[n-j-1][i-j])
+                        alpha = np.arctan(np.absolute(U[n-j-1][i-1-j])/np.absolute(U[n-j-1][i-j]))
+                    BSang[int(i/2)+j] = alpha
+                    rot[int(i/2)+j] = theta
+                    e = np.cos(-theta) + np.sin(-theta)*1j
+                    T[i-1-j][i-1-j] = e*(np.cos(alpha)+0*1j)
+                    T[i-1-j][i-j] = -np.sin(alpha)+0*1j
+                    T[i-j][i-1-j] = e*(np.sin(alpha)+0*1j)
+                    T[i-j][i-j] = np.cos(alpha)+0*1j
+                    U = U @ np.transpose(T)
+                else:
+                    for j in range (i):
+                        T = np.identity(n, dtype = complex)
+                        if U[n-i+j][j]==0:
+                            theta = 0
+                            alpha = 0
+                        elif U[n-i+j-1][j]==0:
+                            theta = 0
+                            alpha = np.pi/2
+                        else:
+                            theta = -np.angle(U[n-i+j-1][j])+np.angle(U[n-i+j][j])
+                            alpha = np.arctan(-(np.absolute(U[n-i+j][j])/np.absolute(U[n-i+j-1][j])))
+                        BSang[-(i-1+j)] = alpha
+                        rot[-(i-1+j)] = theta
+                        e = np.cos(theta) + np.sin(theta)*1j
+                        T[n-i+j-1][n-i+j-1] = e*(np.cos(alpha)+0*1j)
+                        T[n-i+j-1][n-i+j] = -np.sin(alpha)+0*1j
+                        T[n-i+j][n-i+j-1] = e*(np.sin(alpha)+0*1j)
+                        T[n-i+j][n-i+j] = np.cos(alpha)+0*1j
+                        U = T @ U
+
+        counter = 0
+        for i in range(1, n, 2):
+            for k in range(i):
+                self.ops.append(GATE_SET['R'])
+                self.ops[-1] = self.ops[-1](self, i-1-k, rot[counter])
+                self.ops.append(GATE_SET['BS'])
+                self.ops[-1] = self.ops[-1](self, i-1-k, i-1-k+1, BSang[counter])
+                counter += 1
+        for i in reversed(range(2, n-2 if (n-1)%2==0 else n-1, 2)):
+            for k in range(i):
+                self.ops.append(GATE_SET['R'])
+                self.ops[-1] = self.ops[-1](self, n-2-k, rot[counter])
+                self.ops.append(GATE_SET['BS'])
+                self.ops[-1] = self.ops[-1](self, n-2-k, n-1-k, BSang[counter])
+                counter += 1
 
