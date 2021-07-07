@@ -8,7 +8,7 @@ with open("requirements.txt", "r", encoding="utf-8") as f:
 
 setuptools.setup(
     name="photonqat", # Replace with your own username
-    version="0.2.2",
+    version="0.2.3",
     author="The Photonqat Developers",
     author_email="nagairic@gmail.com",
     description="Library for photonic continuous variable quantum programming",
