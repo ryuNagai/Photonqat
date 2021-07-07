@@ -1,7 +1,7 @@
 import numpy as np
 from .ordering import *
 from scipy import special
-# import hafnian as hf
+from thewalrus import hafnian
 
 def GaussianWigner(xi, V, mu):
     xi = xi - mu
@@ -45,30 +45,29 @@ def GaussianQfunc(alpha, V, mu):
 
     Q = 1 / np.sqrt(det_V_Q * np.pi) * np.exp(-1/2 * np.dot(np.conj(alpha_Q), np.dot(V_Qinv, alpha_Q)))
 
-# Futrure replaced
-# def FockDensityMatrix(cov, mu, m, n, tol = 1e-10):
-#     if np.max(cov - cov.T) > tol:
-#         raise ValueError("Covariance matrix must be symmetric.")
-#     else:
-#         cov = (cov + cov.T) / 2
+def FockDensityMatrix(cov, mu, m, n, tol = 1e-10):
+    if np.max(cov - cov.T) > tol:
+        raise ValueError("Covariance matrix must be symmetric.")
+    else:
+        cov = (cov + cov.T) / 2
 
-#     N = np.int(cov.shape[0] / 2)
-#     cov_Q = RtoQmat(cov)
-#     cov_Q_inv = np.linalg.inv(cov_Q)
-#     cov_Q_det = np.linalg.det(cov_Q)
-#     mu_Q = RtoTvec(mu)
+    N = np.int(cov.shape[0] / 2)
+    cov_Q = RtoQmat(cov)
+    cov_Q_inv = np.linalg.inv(cov_Q)
+    cov_Q_det = np.linalg.det(cov_Q)
+    mu_Q = RtoTvec(mu)
 
-#     T1 = np.exp(-0.5 * np.dot(np.dot(np.conj(mu_Q), cov_Q_inv), mu_Q))
-#     T2 = np.sqrt(cov_Q_det * np.prod(special.factorial(m)) * np.prod(special.factorial(n)))
-#     T = T1 / T2
+    T1 = np.exp(-0.5 * np.dot(np.dot(np.conj(mu_Q), cov_Q_inv), mu_Q))
+    T2 = np.sqrt(cov_Q_det * np.prod(special.factorial(m)) * np.prod(special.factorial(n)))
+    T = T1 / T2
 
-#     X = np.block([[np.zeros([N, N]), np.eye(N)], [np.eye(N), np.zeros([N, N])]])
-#     A = np.dot(X, (np.eye(2 * N) - cov_Q_inv))
-#     A = (A + A.T) / 2 # cancel the numeric error of symmetray
-#     A_rp = np.repeat(A, np.hstack([n, m]), axis = 0)
-#     A_rp = np.repeat(A_rp, np.hstack([n, m]), axis = 1)
-#     gamma = np.dot(np.conj(mu_Q), cov_Q_inv)
-#     gamma_rp = np.repeat(gamma, np.hstack([n, m]))
-#     np.fill_diagonal(A_rp, gamma_rp)
-#     prob = T * hf.hafnian(A_rp, loop = True)
-#     return prob
+    X = np.block([[np.zeros([N, N]), np.eye(N)], [np.eye(N), np.zeros([N, N])]])
+    A = np.dot(X, (np.eye(2 * N) - cov_Q_inv))
+    A = (A + A.T) / 2 # cancel the numeric error of symmetray
+    A_rp = np.repeat(A, np.hstack([n, m]), axis = 0)
+    A_rp = np.repeat(A_rp, np.hstack([n, m]), axis = 1)
+    gamma = np.dot(np.conj(mu_Q), cov_Q_inv)
+    gamma_rp = np.repeat(gamma, np.hstack([n, m]))
+    np.fill_diagonal(A_rp, gamma_rp)
+    prob = T * hafnian(A_rp, loop = True)
+    return prob

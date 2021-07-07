@@ -26,13 +26,12 @@ def StoTmat(cov):
 
 def RtoSmat(cov):
     N2 = cov.shape[0]
-    N = np.int(N2/2)
+    N = np.int64(N2/2)
     P = np.zeros([N2, N2]) + 0j
-    for i in range(N2):
-        if i%2:
-            P[i, np.int(np.floor(i/2)) + N] = 1
-        else:
-            P[i, np.int(i/2)] = 1
+    for i in range(N):
+        P[i, i * 2] = 1
+    for i in range(N, N2):
+        P[i, (i-N) * 2 + 1] = 1
     cov_T = np.dot(P, np.dot(cov, np.transpose(P)))
     return cov_T
 

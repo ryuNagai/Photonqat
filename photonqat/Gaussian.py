@@ -97,7 +97,6 @@ class Gaussian():
             raise ValueError("Input array dimension must be same as mode Number.")
         return np.real(FockDensityMatrix(self.V, self.mu, m, n))
 
-
     def GaussianToFock(self, cutoffDim = 10):
         photonNumList = []
         cutoffDim += 1

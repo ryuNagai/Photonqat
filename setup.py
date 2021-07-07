@@ -8,7 +8,7 @@ with open("requirements.txt", "r", encoding="utf-8") as f:
 
 setuptools.setup(
     name="photonqat", # Replace with your own username
-    version="0.2.1",
+    version="0.2.2",
     author="The Photonqat Developers",
     author_email="nagairic@gmail.com",
     description="Library for photonic continuous variable quantum programming",
@@ -16,6 +16,7 @@ setuptools.setup(
     #long_description_content_type="text/markdown",
     url="https://github.com/Blueqat/Photonqat",
     packages=setuptools.find_packages(),
+    install_requires=install_requires,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
